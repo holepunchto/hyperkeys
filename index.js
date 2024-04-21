@@ -86,7 +86,7 @@ class Keychain {
     if (seed) sodium.crypto_sign_seed_keypair(publicKey, secretKey, seed)
     else sodium.crypto_sign_keypair(publicKey, secretKey)
 
-    sodium.experimental_crypto_tweak_ed25519_sk_to_scalar(scalar, secretKey)
+    sodium.extension_tweak_ed25519_sk_to_scalar(scalar, secretKey)
 
     return {
       publicKey,
@@ -98,9 +98,9 @@ class Keychain {
 module.exports = Keychain
 
 function add (a, b, out) {
-  sodium.experimental_crypto_tweak_ed25519_pk_add(out.publicKey, a.publicKey, b.publicKey)
+  sodium.extension_tweak_ed25519_pk_add(out.publicKey, a.publicKey, b.publicKey)
   if (a.scalar && b.scalar) {
-    sodium.experimental_crypto_tweak_ed25519_scalar_add(out.scalar, a.scalar, b.scalar)
+    sodium.extension_tweak_ed25519_scalar_add(out.scalar, a.scalar, b.scalar)
   }
   return out
 }
@@ -122,7 +122,7 @@ function toScalarKeyPair (keyPair) {
   if (!keyPair.secretKey) return keyPair
 
   const scalar = b4a.alloc(32)
-  sodium.experimental_crypto_tweak_ed25519_sk_to_scalar(scalar, keyPair.secretKey)
+  sodium.extension_tweak_ed25519_sk_to_scalar(scalar, keyPair.secretKey)
   return { publicKey: keyPair.publicKey, scalar }
 }
 
@@ -130,7 +130,7 @@ function tweakKeyPair (name, prev) {
   const keyPair = allocKeyPair(true)
   const seed = b4a.allocUnsafe(32)
   sodium.crypto_generichash_batch(seed, [prev, name])
-  sodium.experimental_crypto_tweak_ed25519_base(keyPair.scalar, keyPair.publicKey, seed)
+  sodium.extension_tweak_ed25519_base(keyPair.scalar, keyPair.publicKey, seed)
   return keyPair
 }
 
@@ -153,7 +153,7 @@ function createSigner (kp) {
       },
       sign (signable) {
         const sig = b4a.alloc(sodium.crypto_sign_BYTES)
-        sodium.experimental_crypto_tweak_ed25519_sign_detached(sig, signable, kp.scalar)
+        sodium.extension_tweak_ed25519_sign_detached(sig, signable, kp.scalar)
         return sig
       },
       verify
