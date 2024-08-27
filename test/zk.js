@@ -1,10 +1,10 @@
 const test = require('brittle');
 const b4a = require('b4a');
-const sodium = require('sodium-native'); // Added sodium require statement
+const sodium = require('sodium-native');
 const Keychain = require('../');
 
 // Function to simulate a simple ZK proof generation
-function generateZKProof(scalar, message, publicKey) {
+function generateZKProof (scalar, message, publicKey) {
   // Generate a random challenge (nonce)
   const challenge = b4a.alloc(32);
   sodium.randombytes_buf(challenge);
@@ -20,12 +20,12 @@ function generateZKProof(scalar, message, publicKey) {
   return {
     commitment,
     challenge,
-    proof // Removed trailing comma
+    proof
   };
 }
 
 // Function to verify the ZK proof
-function verifyZKProof(proof, message, publicKey, commitment, challenge) {
+function verifyZKProof (proof, message, publicKey, commitment, challenge) {
   // Recompute the expected proof
   const expectedProof = b4a.alloc(32);
   sodium.crypto_generichash_batch(expectedProof, [commitment, message, publicKey]);
@@ -34,7 +34,7 @@ function verifyZKProof(proof, message, publicKey, commitment, challenge) {
   return b4a.equals(proof, expectedProof);
 }
 
-test('ZK proof generation and verification', function(t) {
+test('ZK proof generation and verification', function (t) {
   const keys = new Keychain();
 
   const signer = keys.get();
