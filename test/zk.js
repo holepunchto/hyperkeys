@@ -28,7 +28,6 @@ function generateZKSchnorrProof(scalar, publicKey) {
   // Step 4: Compute response s = (r + c * scalar) mod L, where L is the order of the base point
   const s = b4a.alloc(32)
   const cScalar = b4a.alloc(32)
-  const orderL = b4a.from('edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f', 'hex')
 
   sodium.crypto_core_ed25519_scalar_reduce(cScalar, c)  // Reduce c mod L
   sodium.crypto_core_ed25519_scalar_mul(cScalar, cScalar, scalar)  // c * scalar
