@@ -1,4 +1,4 @@
-# ZK-keypear
+# zkeypear
 
 🔑🍐 Keychain that derives deterministic Ed25519 keypairs, attestations, and supports a novel Zero-Knowledge proof.
 
