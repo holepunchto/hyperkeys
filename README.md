@@ -1,6 +1,6 @@
-# keypear
+# ZK-keypear
 
-🔑🍐 Keychain that derives deterministic Ed25519 keypairs and attestations
+🔑🍐 Keychain that derives deterministic Ed25519 keypairs, attestations, and supports a novel Zero-Knowledge proof.
 
 ```
 npm install keypear
@@ -8,7 +8,7 @@ npm install keypear
 
 ## Usage
 
-``` js
+```js
 const Keychain = require('keypear')
 
 const keys = new Keychain()
@@ -23,6 +23,13 @@ const subsub = sub.sub('baz') // sub on the sub chain
 
 const sig = cur.sign(message)
 const publicKey = cur.publicKey
+
+// to generate and verify a Zero-Knowledge proof
+
+const { publicKey, scalar } = cur.getProofComponents()
+const zkProof = generateZKProof(scalar, message, publicKey)
+const isValid = verifyZKProof(zkProof.proof, message, publicKey, zkProof.commitment, zkProof.challenge)
+console.log('ZK Proof is valid:', isValid)
 ```
 
 ## API
@@ -68,8 +75,7 @@ function myModule (keychain) {
 
 #### `keyPairInstance = keys.get([nameOrKeyPair])`
 
-Get a new KeyPair instance from the Keychain. Optionally you can provide a name or key pair to
-tweak the keypair before returning it.
+Get a new KeyPair instance from the Keychain. Optionally you can provide a name or key pair to tweak the keypair before returning it.
 
 ```js
 const k = keys.get() // get a keypair instance from the current head
@@ -88,6 +94,31 @@ Perform a Diffie-Hellman against another keypair (if you own this key pair).
 #### `keyPairInstance.publicKey`
 
 Get the public key of this instance.
+
+#### `keyPairInstance.getProofComponents()`
+
+Retrieve the components required to generate a Zero-Knowledge proof, including the `publicKey` and `scalar` (private key).
+
+```js
+const { publicKey, scalar } = keyPairInstance.getProofComponents()
+```
+
+#### `zkProof = generateZKProof(scalar, message, publicKey)`
+
+Generate a Zero-Knowledge proof to demonstrate knowledge of the private key corresponding to the public key without revealing the private key.
+
+```js
+const zkProof = generateZKProof(scalar, message, publicKey)
+```
+
+#### `isValid = verifyZKProof(proof, message, publicKey, commitment, challenge)`
+
+Verify a Zero-Knowledge proof. Returns `true` if the proof is valid, otherwise `false`.
+
+```js
+const isValid = verifyZKProof(zkProof.proof, message, publicKey, zkProof.commitment, zkProof.challenge)
+console.log('ZK Proof is valid:', isValid)
+```
 
 #### `keychain = keys.sub(nameOrKeyPair)`
 
