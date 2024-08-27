@@ -25,11 +25,12 @@ function generateZKSchnorrProof(scalar, publicKey) {
   sodium.crypto_generichash(c, hashInput)
   console.log('🔑 Computed Challenge (c = H(R || publicKey)):', c.toString('hex'))
 
-  // Step 4: Compute response s = r + c * scalar (mod L)
+  // Step 4: Compute s = r + c * scalar
   const s = b4a.alloc(32)
   const cScalar = b4a.alloc(32)
-  sodium.crypto_core_ed25519_scalar_reduce(cScalar, c)  // Reduce c mod L (ensures c is in scalar field)
-  sodium.crypto_core_ed25519_scalar_mul(cScalar, cScalar, scalar) // Multiply c and scalar
+  
+  // Use c directly, as it's already 32 bytes
+  sodium.crypto_core_ed25519_scalar_mul(cScalar, c, scalar)  // Multiply c and scalar
   sodium.crypto_core_ed25519_scalar_add(s, r, cScalar)  // s = r + c * scalar
   console.log('🔐 Computed Response (s = r + c * scalar):', s.toString('hex'))
 
