@@ -55,13 +55,13 @@ function verifyZKSchnorrProof(proof) {
   // Step 2: Verify that s * G = R + c * publicKey
   const sG = b4a.alloc(32)
   const cPK = b4a.alloc(32)
-  const R_plus_cPK = b4a.alloc(32)
+  const rPlusCpk = b4a.alloc(32)  // Updated to follow camelCase
 
   sodium.crypto_scalarmult_ed25519_base_noclamp(sG, s)       // s * G
   sodium.crypto_scalarmult_ed25519_noclamp(cPK, c, publicKey) // c * publicKey
-  sodium.crypto_core_ed25519_add(R_plus_cPK, R, cPK)         // R + c * publicKey
+  sodium.crypto_core_ed25519_add(rPlusCpk, R, cPK)         // R + c * publicKey
 
-  const isValid = b4a.equals(sG, R_plus_cPK)
+  const isValid = b4a.equals(sG, rPlusCpk)
   console.log(isValid ? '✅ Proof is Valid' : '❌ Proof is Invalid')
 
   console.timeEnd('Proof Verification Time')
