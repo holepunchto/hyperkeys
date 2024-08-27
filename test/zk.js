@@ -3,7 +3,7 @@ const b4a = require('b4a')
 const sodium = require('sodium-native')
 const Keychain = require('../')
 
-// Function to generate a real ZK proof using Schnorr protocol
+// Function to generate a real ZK proof using the Schnorr protocol
 function generateZKSchnorrProof(scalar, publicKey) {
   console.log('\n===== Starting ZK Schnorr Proof Generation =====\n')
 
@@ -25,13 +25,13 @@ function generateZKSchnorrProof(scalar, publicKey) {
   sodium.crypto_generichash(c, hashInput)
   console.log('🔑 Computed Challenge (c = H(R || publicKey)):', c.toString('hex'))
 
-  // Step 4: Compute s = r + c * scalar
-  const s = b4a.alloc(32)
+  // Step 4: Compute c * scalar as a point multiplication
   const cScalar = b4a.alloc(32)
-  
-  // Use c directly, as it's already 32 bytes
-  sodium.crypto_core_ed25519_scalar_mul(cScalar, c, scalar)  // Multiply c and scalar
-  sodium.crypto_core_ed25519_scalar_add(s, r, cScalar)  // s = r + c * scalar
+  sodium.crypto_scalarmult_ed25519_noclamp(cScalar, c, scalar)
+
+  // Step 5: Compute s = r + cScalar mod L
+  const s = b4a.alloc(32)
+  sodium.crypto_core_ed25519_scalar_add(s, r, cScalar)
   console.log('🔐 Computed Response (s = r + c * scalar):', s.toString('hex'))
 
   console.timeEnd('Proof Generation Time')
@@ -40,7 +40,7 @@ function generateZKSchnorrProof(scalar, publicKey) {
   return { R, s, publicKey }
 }
 
-// Function to verify the ZK proof using Schnorr protocol
+// Function to verify the ZK proof using the Schnorr protocol
 function verifyZKSchnorrProof(proof) {
   console.log('\n===== Starting ZK Schnorr Proof Verification =====\n')
 
@@ -83,12 +83,12 @@ test('ZK Schnorr proof generation and verification', function (t) {
   const keys = new Keychain()
   const signer = keys.get()
 
-  // Use the getProofComponents method to retrieve public key and scalar
+  // Use the getProofComponents method to retrieve the public key and scalar
   const { publicKey, scalar } = signer.getProofComponents()
   console.log('🔑 Public Key:', publicKey.toString('hex'))
   console.log('🔐 Scalar (Private Key Component):', scalar.toString('hex'))
 
-  // Generate ZK proof using the Schnorr protocol
+  // Generate the ZK proof using the Schnorr protocol
   const zkProof = generateZKSchnorrProof(scalar, publicKey)
 
   t.ok(zkProof, 'ZK Schnorr proof should be generated')
