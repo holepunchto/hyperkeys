@@ -9,6 +9,11 @@ test('basic', function (t) {
 
   t.ok(signer.publicKey)
   t.ok(signer.sign)
+  
+  // Test getProofComponents method
+  const proofComponents = signer.getProofComponents()
+  t.ok(proofComponents.publicKey, 'publicKey should be present in proof components')
+  t.ok(proofComponents.scalar, 'scalar should be present in proof components')
 })
 
 test('deterministic', function (t) {
@@ -24,6 +29,11 @@ test('deterministic', function (t) {
 
   t.alike(verifier.publicKey, signer.publicKey, 'verifier has same public key')
   t.not(verifier.sign, 'signable')
+
+  // Test getProofComponents method for deterministic key
+  const proofComponents = signer.getProofComponents()
+  t.ok(proofComponents.publicKey, 'publicKey should be present in proof components')
+  t.ok(proofComponents.scalar, 'scalar should be present in proof components')
 })
 
 test('deterministic subs', function (t) {
@@ -83,4 +93,13 @@ test('local sub and remote checkout', function (t) {
 
   t.alike(k1.publicKey, k3.publicKey)
   t.alike(k2.publicKey, k4.publicKey)
+  
+  // Test getProofComponents method for sub keys
+  const proofComponentsSub1 = k1.getProofComponents()
+  t.ok(proofComponentsSub1.publicKey, 'publicKey should be present in sub1 proof components')
+  t.ok(proofComponentsSub1.scalar, 'scalar should be present in sub1 proof components')
+
+  const proofComponentsSub2 = k2.getProofComponents()
+  t.ok(proofComponentsSub2.publicKey, 'publicKey should be present in sub2 proof components')
+  t.ok(proofComponentsSub2.scalar, 'scalar should be present in sub2 proof components')
 })
