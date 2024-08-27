@@ -56,4 +56,4 @@ test('ZK proof generation and verification', function (t) {
   // Verify the ZK proof
   const isValid = verifyZKProof(zkProof.proof, message, publicKey, zkProof.commitment, zkProof.challenge)
   t.ok(isValid, 'ZK proof should be valid')
-})
+})  // No trailing space here
