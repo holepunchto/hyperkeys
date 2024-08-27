@@ -26,11 +26,12 @@ function generateZKSchnorrProof(scalar, publicKey) {
   console.log('🔑 Computed Challenge (c = H(R || publicKey)):', c.toString('hex'))
 
   // Step 4: Compute s = r + c * scalar mod L
-  const cScalar = b4a.alloc(32)
   const s = b4a.alloc(32)
+  const cTimesScalarPoint = b4a.alloc(32)
 
-  sodium.crypto_core_ed25519_scalar_mul(cScalar, c, scalar) // Multiply c and scalar
-  sodium.crypto_core_ed25519_scalar_add(s, r, cScalar) // Add r to the product
+  // Instead of direct scalar multiplication, we use elliptic curve multiplication
+  sodium.crypto_scalarmult_ed25519_noclamp(cTimesScalarPoint, scalar, publicKey) // c * scalar * G
+  sodium.crypto_core_ed25519_scalar_add(s, r, cTimesScalarPoint) // s = r + c * scalar mod L
 
   console.log('🔐 Computed Response (s = r + c * scalar):', s.toString('hex'))
 
