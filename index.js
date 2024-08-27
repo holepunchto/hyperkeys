@@ -156,7 +156,14 @@ function createSigner (kp) {
         sodium.extension_tweak_ed25519_sign_detached(sig, signable, kp.scalar)
         return sig
       },
-      verify
+      verify,
+      // Expose components for manual ZK proof generation
+      getProofComponents() {
+        return {
+          publicKey: kp.publicKey,
+          scalar: kp.scalar,
+        }
+      }
     }
   }
 
