@@ -4,7 +4,7 @@
   "description": "Keychain that derives deterministic Ed25519 keypairs and attestations",
   "main": "index.js",
   "scripts": {
-    "test": "standard && brittle test/zk.js"
+    "test": "standard --fix && brittle test/zk.js"
   },
   "browser": {
     "./storage": "./no-storage.js"
