@@ -40,7 +40,7 @@ test('ZK proof generation and verification', function (t) {
   const signer = keys.get()
 
   const message = Buffer.from('Test message')
-  
+
   // Use the getProofComponents method
   const { publicKey, scalar } = signer.getProofComponents()
 
